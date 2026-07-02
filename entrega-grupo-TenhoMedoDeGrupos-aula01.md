@@ -1,4 +1,4 @@
-# Entrega Aula 01 — Grupo "Tenho medo de Grupos"
+# Entrega Aula 01 — Grupo "Tenho Medo de Grupos"
 
 **Disciplina:** Cloud & Cognitive Environments — FIAP MBA AI Engineering & Multi-Agents
 **Turma:** 2AIER
@@ -21,7 +21,7 @@
 | Tiago da Silva Brilhante | 🟢 N1 | Exercícios 1.1 e 1.2 |
 | Gabriel Moreira Do Nascimento | 🟢 N1 | Exercícios 1.3 e 1.4 |
 | Andrew Augusto Jungers da Silva | 🟡 N2 | Exercício 2.1 — Arquitetura QC + diagrama |
-| Andrew Augusto Jungers da Silva | 🟡 N2 | Exercícios 2.2 e 2.3 |
+| Getter Benedito de Matos Fernandes | 🟡 N2 | Exercícios 2.2 e 2.3 |
 | Tiago da Silva Brilhante | 🔴 N3 (bônus) | Exercícios 3.1, 3.2 e 3.3 |
 
 
