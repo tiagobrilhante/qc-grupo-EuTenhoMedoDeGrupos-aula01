@@ -2,7 +2,7 @@
 
 **Disciplina:** Cloud & Cognitive Environments — FIAP MBA AI Engineering & Multi-Agents
 **Turma:** 2AIER
-**Data de entrega:** 01/07/2026
+**Data de entrega:** 02/07/2026
 
 ## Grupo
 
@@ -18,11 +18,10 @@
 
 | Membro | Nível assumido | Item específico |
 |--------|----------------|-----------------|
-| Tiago da Silva Brilhante | 🟢 N1 | Exercícios 1.1 e 1.2 |
+| Tiago da Silva Brilhante | 🟢 N1 · 🔴 N3 | Exercícios 1.1, 1.2 e 3.1 |
 | Gabriel Moreira Do Nascimento | 🟢 N1 | Exercícios 1.3 e 1.4 |
-| Andrew Augusto Jungers da Silva | 🟡 N2 | Exercício 2.1 — Arquitetura QC + diagrama |
+| Andrew Augusto Jungers da Silva | 🟡 N2 · 🔴 N3 | Exercício 2.1 (Arquitetura QC + diagrama), 3.2 e 3.3 |
 | Getter Benedito de Matos Fernandes | 🟡 N2 | Exercícios 2.2 e 2.3 |
-| Tiago da Silva Brilhante | 🔴 N3 (bônus) | Exercícios 3.1, 3.2 e 3.3 |
 
 
 ---
@@ -45,9 +44,9 @@ Para cada serviço, identifique se é IaaS, PaaS, SaaS ou FaaS. Justifique em um
 | AWS Lambda | FaaS | Não existe servidor a gerenciar nem alocar; a cobrança é por execução da função, o resto é abstraído pela AWS. |
 | Azure SQL Database | PaaS | O motor de banco (patches, HA, backups) é gerenciado pela Azure; o cliente cuida só do schema e dos dados. |
 | Salesforce CRM | SaaS | Sistema de CRM completo consumido via navegador, sem nenhuma camada de infraestrutura exposta ao cliente. |
-| Google Kubernetes Engine (GKE) | PaaS/IaaS (híbrido) | O GCP opera o control plane do Kubernetes; o time de QC continua responsável pelos pods, imagens e workloads. |
+| Google Kubernetes Engine (GKE) | PaaS (CaaS) | O GCP opera o control plane do Kubernetes; o time de QC continua responsável pelos pods, imagens e workloads — Kubernetes gerenciado é classificado como PaaS (subcategoria Container-as-a-Service). |
 | Azure Blob Storage | PaaS | Storage totalmente gerenciado (durabilidade, replicação); o cliente só define containers, políticas e dados. |
-| Azure OpenAI Service | SaaS / API-as-a-Service | Consumido via chamada REST; não há gestão de modelo, infraestrutura de GPU ou runtime por parte do cliente. |
+| Azure OpenAI Service | PaaS | Plataforma gerenciada consumida via API: a Azure opera modelo, GPUs e runtime, mas o cliente compõe a aplicação (deploy do modelo, prompts, código de consumo) em vez de receber um produto final pronto — por isso PaaS, e não SaaS. |
 
 ---
 
@@ -98,7 +97,7 @@ c) Para reduzir o impacto para menos de R$ 50.000/ano, qual SLA mínimo seria ne
 Sistema de e-commerce, SLA = 99,9%, R$ 50.000/hora em vendas.
 
 **a) Downtime anual permitido:**
-Downtime = 8.760 × (1 − 0,999) = **8,76 horas/ano** (≈ 525 minutos)
+Downtime = 8.760 × (1 − 0,999) = **8,76 horas/ano** (≈ 526 minutos)
 
 **b) Impacto financeiro máximo por ano:**
 8,76 h × R$ 50.000 = **R$ 438.000/ano**
@@ -179,7 +178,9 @@ Três motivos guiaram a escolha:
 | Mensageria/Filas | Azure Service Bus + Event Grid | Amazon SQS/SNS + EventBridge | Cloud Pub/Sub |
 | Observabilidade | Azure Monitor + App Insights | Amazon CloudWatch + X-Ray | Cloud Monitoring + Cloud Trace |
 
-**4.Diagrama: ver `diagramas/arquitetura-qc-aula01.png`.**
+> **Nota sobre tiers de banco:** o **Hyperscale** foi escolhido para a QC pelo volume (5M SKUs × 12 países) e pela necessidade de escalar storage/réplicas sem downtime. No comparativo de custo genérico (2.2) e no app de NF (2.3) usamos tiers menores (GP/Standard), adequados àqueles escopos.
+
+**4. Diagrama:** ver `diagramas/arquitetura-qc-aula01.png`.
 
 ---
 
@@ -309,11 +310,9 @@ Tudo no Cloud Shell — bicep já está instalado.
 5. Não esqueça: az group delete --name rg-bicep-aula01 --yes --no-wait ao final.
 ```
 
-`bicep/main.bicep` traduz manualmente os mesmos recursos do `main.tf`
-```text
-NÃO existe o arquivo mencionado:  template.json em aulas/01-fundamentos-iac/template/
-E POR ESSE MOTIVO, usamos o arquivo do: aulas/01-fundamentos-iac/lab/terraform/main.tf
-```
+`bicep/main.bicep` traduz manualmente os mesmos recursos do `main.tf`.
+
+> **Observação:** o arquivo `template.json` citado no enunciado (`aulas/01-fundamentos-iac/template/`) não existe nesta aula. Por isso partimos de `aulas/01-fundamentos-iac/lab/terraform/main.tf` como base da tradução para Bicep.
 
 Comparação solicitada no item 4:
 
@@ -373,7 +372,7 @@ d) Estime custo de egress: 10 TB/mês entre Azure (Brazil South) e AWS (us-east-
 | Quando escolher | Time já domina HCL; quer o ecossistema de módulos mais maduro do mercado | Time já é forte em uma linguagem de programação e quer reaproveitar lógica de programação (loops, testes unitários) na própria IaC |
 
 **d) Estimativa de egress: 10 TB/mês Azure (Brazil South) → AWS (us-east-1):**
-Egress inter-cloud costuma ficar na faixa de USD 0,08-0,12/GB nos primeiros TBs, caindo por faixas de volume. Para 10.000 GB/mês a ~USD 0,09/GB (estimativa ilustrativa, confirmar na tabela oficial de bandwidth da Azure): **≈ USD 900/mês** só de egress — valor que deve ser confrontado com o ganho de usar dois provedores antes de justificar a arquitetura multi-cloud.
+O egress de saída para a internet do **Brazil South** cai na **Zona 3** da tabela de bandwidth da Azure — a faixa mais cara — a **USD 0,181/GB** no primeiro tier (até 10 TB/mês), com os primeiros 100 GB/mês gratuitos. Para 10 TB (~10.000 GB): (10.000 − 100) × USD 0,181 ≈ **USD 1.792/mês** (≈ **USD 21,5 mil/ano**) só de egress. É um custo recorrente relevante — inclusive **maior que a própria diferença de preço entre provedores** vista no Exercício 2.2 —, que deve ser confrontado com o ganho de usar dois provedores antes de justificar a arquitetura multi-cloud. (Taxa da tabela oficial de bandwidth da Azure; Brazil South é uma das regiões de egress mais caras.)
 
 **Azure Arc / AWS Outposts na QC:** ambos permitiriam operar cargas locais (ex.: em um país com exigência de residência de dados) sob o mesmo plano de controle da nuvem principal, reduzindo a fragmentação de gestão que uma arquitetura multi-cloud "pura" traria. Um caminho intermediário entre ficar 100% em uma nuvem e operar em nuvens totalmente distintas.
 
