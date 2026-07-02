@@ -38,7 +38,7 @@ resource vnet 'Microsoft.Network/virtualNetworks@2023-09-01' = {
         }
       }
       {
-        // Exercício 3.1 / 3.2 — subnet dedicada à futura camada de aplicação da QC
+        // Exercício 3.1 / 3.2: subnet dedicada à futura camada de aplicação da QC
         name: 'subnet-app'
         properties: {
           addressPrefix: '10.0.2.0/24'
@@ -67,6 +67,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
           destinationAddressPrefix: '*'
         }
       }
+      // EXTRA (hardening do grupo): HTTPS também restrito a meuIp, não aberto a '*'.
       {
         name: 'HTTPS'
         properties: {
@@ -76,10 +77,11 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRange: '443'
-          sourceAddressPrefix: '*'
+          sourceAddressPrefix: '${meuIp}/32'
           destinationAddressPrefix: '*'
         }
       }
+      // EXTRA (hardening do grupo): HTTP também restrito a meuIp, não aberto a '*'.
       {
         name: 'HTTP'
         properties: {
@@ -89,7 +91,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2023-09-01' = {
           protocol: 'Tcp'
           sourcePortRange: '*'
           destinationPortRange: '80'
-          sourceAddressPrefix: '*'
+          sourceAddressPrefix: '${meuIp}/32'
           destinationAddressPrefix: '*'
         }
       }

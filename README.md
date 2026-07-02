@@ -1,6 +1,8 @@
-# Grupo Eu Tenho Medo de Grupos — Entrega Aula 01
+# Grupo Tenho Medo de Grupos - Entrega Aula 01
 
 Documento principal: [`entrega-grupo-TenhoMedoDeGrupos-aula01.md`](./entrega-grupo-TenhoMedoDeGrupos-aula01.md)
+
+Diagrama da arquitetura (Exercício 2.1): [`diagramas/arquitetura-qc-aula01.png`](./diagramas/arquitetura-qc-aula01.png)
 
 ## Como rodar o Terraform (Exercício 3.1)
 

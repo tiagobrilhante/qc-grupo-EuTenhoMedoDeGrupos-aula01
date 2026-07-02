@@ -44,9 +44,9 @@ Para cada serviço, identifique se é IaaS, PaaS, SaaS ou FaaS. Justifique em um
 | AWS Lambda | FaaS | Não existe servidor a gerenciar nem alocar; a cobrança é por execução da função, o resto é abstraído pela AWS. |
 | Azure SQL Database | PaaS | O motor de banco (patches, HA, backups) é gerenciado pela Azure; o cliente cuida só do schema e dos dados. |
 | Salesforce CRM | SaaS | Sistema de CRM completo consumido via navegador, sem nenhuma camada de infraestrutura exposta ao cliente. |
-| Google Kubernetes Engine (GKE) | PaaS (CaaS) | O GCP opera o control plane do Kubernetes; o time de QC continua responsável pelos pods, imagens e workloads — Kubernetes gerenciado é classificado como PaaS (subcategoria Container-as-a-Service). |
+| Google Kubernetes Engine (GKE) | PaaS (CaaS) | O GCP opera o control plane do Kubernetes; o time de QC continua responsável pelos pods, imagens e workloads. Kubernetes gerenciado é classificado como PaaS (subcategoria Container-as-a-Service). |
 | Azure Blob Storage | PaaS | Storage totalmente gerenciado (durabilidade, replicação); o cliente só define containers, políticas e dados. |
-| Azure OpenAI Service | PaaS | Plataforma gerenciada consumida via API: a Azure opera modelo, GPUs e runtime, mas o cliente compõe a aplicação (deploy do modelo, prompts, código de consumo) em vez de receber um produto final pronto — por isso PaaS, e não SaaS. |
+| Azure OpenAI Service | PaaS | Plataforma gerenciada consumida via API: a Azure opera modelo, GPUs e runtime, mas o cliente compõe a aplicação (deploy do modelo, prompts, código de consumo) em vez de receber um produto final pronto. Por isso é PaaS, e não SaaS. |
 
 ---
 
@@ -68,7 +68,7 @@ Cenário E: Instituição financeira tem mainframe com dados de clientes que pre
 
 
 **Cenário A: sistema de rastreamento de frotas (2008, sem doc, 1 mantenedor):**
-**Rehost.** O código legado sem documentação e a dependência de uma única pessoa tornam qualquer refatoração arriscada a curto prazo. Rehost move a carga para a nuvem rapidamente, ganhando elasticidade de infraestrutura sem tocar no código — o risco fica isolado à camada de rede/servidor, não ao software.
+**Rehost.** O código legado sem documentação e a dependência de uma única pessoa tornam qualquer refatoração arriscada a curto prazo. Rehost move a carga para a nuvem rapidamente, ganhando elasticidade de infraestrutura sem tocar no código: o risco fica isolado à camada de rede/servidor, não ao software.
 
 **Cenário B: ERP de RH com menos de 5 usuários/mês:**
 **Retire.** Baixíssimo uso não justifica o custo de manter, licenciar ou migrar o sistema. Melhor arquivar os dados históricos em storage frio (para eventual auditoria) e desligar o ERP.
@@ -77,7 +77,7 @@ Cenário E: Instituição financeira tem mainframe com dados de clientes que pre
 **Refactor.** A empresa decidiu explicitamente investir em reescrever a arquitetura (microserviços + K8s + eventos). É o R de maior esforço, mas também o que sustenta crescimento e resiliência a longo prazo para um domínio crítico como pagamentos.
 
 **Cenário D: CRM interno de 15 anos, SaaS cobre 90% da necessidade:**
-**Repurchase.** Quando uma solução de mercado atende a maior parte do escopo por um custo menor que manter software proprietário, repurchase costuma vencer — desde que os 10% restantes não sejam um diferencial competitivo insubstituível.
+**Repurchase.** Quando uma solução de mercado atende a maior parte do escopo por um custo menor que manter software proprietário, repurchase costuma vencer, desde que os 10% restantes não sejam um diferencial competitivo insubstituível.
 
 **Cenário E: mainframe com dados sob exigência do Banco Central:**
 **Retain.** Exigência regulatória não é uma limitação técnica a ser contornada. É um requisito de compliance. Manter on-premise aqui é a decisão correta, não uma falha de estratégia de migração.
@@ -120,7 +120,7 @@ Você é o responsável de segurança da Quantum Commerce. Para cada perfil abai
 | Agente de IA que lê produtos do Storage | **Storage Blob Data Reader** | Acesso apenas de leitura no plano de dados. O agente nunca precisa escrever ou apagar blobs, só consultar o catálogo.  |
 | Engenheiro de dados que carrega novos catálogos | **Storage Blob Data Contributor** | Precisa escrever/atualizar blobs, mas não precisa de permissões de gestão do storage account em si.                    |
 | Time de FinOps que só visualiza custos | **Cost Management Reader** | Acesso de leitura estritamente ao módulo de custos, sem qualquer permissão sobre os recursos que geram esse custo.     |
-| Auditor externo que lê configurações da assinatura | **Reader** (escopo assinatura) | Permite inspecionar configuração de todos os recursos sem risco de alteração acidental — adequado a auditoria externa. |
+| Auditor externo que lê configurações da assinatura | **Reader** (escopo assinatura) | Permite inspecionar configuração de todos os recursos sem risco de alteração acidental, adequado a auditoria externa. |
 | CI/CD que provisiona infra via Terraform | **Contributor** no Resource Group específico + Service Principal dedicado | Escopo restrito ao(s) RG(s) que o pipeline realmente gerencia; nunca Owner/Contributor na assinatura inteira.          |
 
 **Princípio aplicado em todas as linhas:** 
@@ -207,10 +207,10 @@ Escopo: 2 VMs (2 vCPU/8GB, Linux, 24/7) + 500 GB object storage + 1 banco gerenc
 | **Total anual** | **~US$ 4.500** | **~US$ 4.680** | **~US$ 3.890** | |
 
 **a) Provedor mais barato?**
-Nas estimativas, o GCP fica ligeiramente mais barato, mas a diferença (~13% frente à Azure, ~17% frente à AWS) não é grande o suficiente para, sozinha, decidir o provedor de uma plataforma de IA — outros fatores pesam mais (ver item c).
+Nas estimativas, o GCP fica ligeiramente mais barato, mas a diferença (~13% frente à Azure, ~17% frente à AWS) não é grande o suficiente para, sozinha, decidir o provedor de uma plataforma de IA; outros fatores pesam mais (ver item c).
 
 **b) Reserved Instances de 1 ano no mais caro (AWS):**
-RIs de 1 ano tipicamente cortam 30-40% do custo de compute. Aplicando isso só na fatia de VM da AWS (~US$ 135 → ~US$ 85/mês), o total mensal da AWS cairia para perto de US$ 340 — ficando competitivo com Azure e mais próximo do GCP. Ou seja, o resultado muda bastante quando se considera compromisso de longo prazo, o que reforça que list price isolado é um comparativo incompleto.
+RIs de 1 ano tipicamente cortam 30-40% do custo de compute. Aplicando isso só na fatia de VM da AWS (~US$ 135 → ~US$ 85/mês), o total mensal da AWS cairia para perto de US$ 340, ficando competitivo com Azure e mais próximo do GCP. Ou seja, o resultado muda bastante quando se considera compromisso de longo prazo, o que reforça que list price isolado é um comparativo incompleto.
 
 **c) Outros fatores além de preço:**
 - Maturidade e integração nativa do serviço de LLM (Azure OpenAI vs. Bedrock vs. Vertex AI) com o resto da stack.
@@ -264,10 +264,11 @@ Rode terraform plan e identifique no diff exatamente qual regra do NSG mudou (n�
 
 Alterações aplicadas em `terraform/` (arquivos completos no ZIP):
 
-1. **SSH restrito ao IP do grupo** — a regra `SSH` do NSG deixou de usar `source_address_prefix = "*"` e passou a usar `"${var.meu_ip}/32"`. A variável `meu_ip` foi adicionada em `variables.tf` **sem valor default**, forçando quem for aplicar a informar o próprio IP (obtido com `curl ifconfig.me` no Cloud Shell) — isso evita reintroduzir a má prática por esquecimento.
-2. **Segunda subnet `subnet-app`** — adicionada em `10.0.2.0/24`, na mesma VNet (`10.0.0.0/16`), isolando a futura camada de aplicação da QC da subnet `default` onde vive a VM de referência.
-3. **Output do IP público** — `outputs.tf` expõe `public_ip_address` (`azurerm_public_ip.pip.ip_address`), visível via `terraform output public_ip_address` após o `apply`.
-4. **`terraform plan` esperado:** como nenhum recurso mudou de `name`, tipo ou depende de "force replacement" (a alteração é só no valor de `source_address_prefix` da regra SSH, e a subnet nova é um recurso adicional, não uma modificação de recurso existente), o plano deve mostrar `~ update in-place` no NSG e `+ create` na `azurerm_subnet.app` — **a VM não é recriada**.
+1. **SSH restrito ao IP do grupo:** a regra `SSH` do NSG deixou de usar `source_address_prefix = "*"` e passou a usar `"${var.meu_ip}/32"`. A variável `meu_ip` foi adicionada em `variables.tf` **sem valor default**, forçando quem for aplicar a informar o próprio IP (obtido com `curl ifconfig.me` no Cloud Shell). Isso evita reintroduzir a má prática por esquecimento.
+2. **Segunda subnet `subnet-app`:** adicionada em `10.0.2.0/24`, na mesma VNet (`10.0.0.0/16`), isolando a futura camada de aplicação da QC da subnet `default` onde vive a VM de referência.
+3. **Output do IP público:** `outputs.tf` expõe `public_ip_address` (`azurerm_public_ip.pip.ip_address`), visível via `terraform output public_ip_address` após o `apply`.
+4. **`terraform plan` esperado:** nenhum recurso muda de `name`, tipo ou exige "force replacement", então o plano mostra `~ update in-place` no NSG e `+ create` na `azurerm_subnet.app`. **A VM não é recriada.** No diff do NSG, a regra exigida pelo enunciado que muda é a **SSH** (`source_address_prefix` de `*` para `${var.meu_ip}/32`); as regras **HTTPS** e **HTTP** também aparecem alteradas por causa do hardening extra descrito no item 5.
+5. **Hardening extra (não pedido no enunciado, mas o grupo considerou importante):** além do SSH, também restringimos as regras HTTPS (443) e HTTP (80) do NSG à origem `var.meu_ip`, em vez de deixá-las abertas para qualquer origem (`*`). Como esta é uma VM de referência e não um servidor web público, aplicar menor privilégio de rede também nas portas 80/443 reduz a superfície de exposição sem custo adicional. O mesmo hardening foi replicado no Bicep.
 
 ```bash
 export TF_VAR_meu_ip=$(curl -s ifconfig.me)
@@ -318,9 +319,11 @@ Comparação solicitada no item 4:
 
 | Artefato | Linhas aproximadas | Observação |
 |---|---|---|
-| `main.tf` (Terraform) | ~160 | Sintaxe HCL, blocos `resource` explícitos |
-| `main.bicep` | ~190 | Um pouco mais verboso por declarar `properties` aninhadas explicitamente |
-| `template.json` (ARM) | não disponível nesta aula | — |
+| `main.tf` (Terraform) | ~175 | Sintaxe HCL, blocos `resource` explícitos |
+| `main.bicep` | ~193 | Arquivo único; `properties` aninhadas deixam cada recurso mais verboso |
+| `template.json` (ARM) | não disponível nesta aula | n/d |
+
+> **Nota:** os números são por arquivo. A configuração Terraform completa (`main.tf` + `variables.tf` + `outputs.tf`) soma ~219 linhas; o Bicep concentra tudo em um arquivo (~193). Por recurso o Bicep é um pouco mais verboso (properties aninhadas), mas a solução Terraform ocupa mais linhas por separar variáveis e outputs em arquivos próprios.
 
 - **Mais legível:** o grupo considerou o Terraform ligeiramente mais legível pela sintaxe HCL mais enxuta, mas o Bicep venceu em previsibilidade de tipos (autocomplete forte no VS Code).
 - **Quando escolher Bicep sobre Terraform:** em ambientes 100% Azure, sem necessidade de multi-cloud, onde vale a pena abrir mão da portabilidade do Terraform em troca de integração nativa com Azure Resource Manager (sem provider, sem state file externo a gerenciar).
@@ -372,7 +375,7 @@ d) Estime custo de egress: 10 TB/mês entre Azure (Brazil South) e AWS (us-east-
 | Quando escolher | Time já domina HCL; quer o ecossistema de módulos mais maduro do mercado | Time já é forte em uma linguagem de programação e quer reaproveitar lógica de programação (loops, testes unitários) na própria IaC |
 
 **d) Estimativa de egress: 10 TB/mês Azure (Brazil South) → AWS (us-east-1):**
-O egress de saída para a internet do **Brazil South** cai na **Zona 3** da tabela de bandwidth da Azure — a faixa mais cara — a **USD 0,181/GB** no primeiro tier (até 10 TB/mês), com os primeiros 100 GB/mês gratuitos. Para 10 TB (~10.000 GB): (10.000 − 100) × USD 0,181 ≈ **USD 1.792/mês** (≈ **USD 21,5 mil/ano**) só de egress. É um custo recorrente relevante — inclusive **maior que a própria diferença de preço entre provedores** vista no Exercício 2.2 —, que deve ser confrontado com o ganho de usar dois provedores antes de justificar a arquitetura multi-cloud. (Taxa da tabela oficial de bandwidth da Azure; Brazil South é uma das regiões de egress mais caras.)
+O egress de saída para a internet do **Brazil South** cai na **Zona 3** da tabela de bandwidth da Azure (a faixa mais cara) a **USD 0,181/GB** no primeiro tier (até 10 TB/mês), com os primeiros 100 GB/mês gratuitos. Para 10 TB (~10.000 GB): (10.000 − 100) × USD 0,181 ≈ **USD 1.792/mês** (≈ **USD 21,5 mil/ano**) só de egress. É um custo recorrente relevante (inclusive **maior que a própria diferença de preço entre provedores** vista no Exercício 2.2), que deve ser confrontado com o ganho de usar dois provedores antes de justificar a arquitetura multi-cloud. (Taxa da tabela oficial de bandwidth da Azure; Brazil South é uma das regiões de egress mais caras.)
 
 **Azure Arc / AWS Outposts na QC:** ambos permitiriam operar cargas locais (ex.: em um país com exigência de residência de dados) sob o mesmo plano de controle da nuvem principal, reduzindo a fragmentação de gestão que uma arquitetura multi-cloud "pura" traria. Um caminho intermediário entre ficar 100% em uma nuvem e operar em nuvens totalmente distintas.
 
@@ -382,7 +385,7 @@ O egress de saída para a internet do **Brazil South** cai na **Zona 3** da tabe
 
 O aprendizado mais importante desta aula foi perceber que os 3 níveis de exercício não são compartimentos isolados. Eles formam uma cadeia de decisão. A escolha de modelo de serviço e de estratégia de migração só se sustenta se a infraestrutura por trás for reprodutível e auditável. Isso ficou concreto no Exercício 3.1: uma regra de NSG liberada para `*` parece um detalhe pequeno no portal, mas vira um risco sério quando multiplicado pelos 12 países e 5M SKUs da Quantum Commerce.
 
-Essa cadeia se conecta diretamente com uma arquitetura agentic. Um agente de IA que consulta o Storage de produtos (Exercício 1.4) só é seguro se a role atribuída a ele for a mínima necessária — e essa role só existe de forma confiável se for definida em código versionado (Terraform/Bicep), não clicada manualmente no portal por alguém que pode esquecer de revisar depois. Do mesmo modo, reprodutibilidade de agentes exige que segredos (chaves de API, connection strings) nunca fiquem hardcoded — o mesmo princípio do `.gitignore` que impede `terraform.tfstate` de vazar se aplica a qualquer credencial que um agente vá usar em produção.
+Essa cadeia se conecta diretamente com uma arquitetura agentic. Um agente de IA que consulta o Storage de produtos (Exercício 1.4) só é seguro se a role atribuída a ele for a mínima necessária, e essa role só existe de forma confiável se for definida em código versionado (Terraform/Bicep), não clicada manualmente no portal por alguém que pode esquecer de revisar depois. Do mesmo modo, reprodutibilidade de agentes exige que segredos (chaves de API, connection strings) nunca fiquem hardcoded, o mesmo princípio do `.gitignore` que impede `terraform.tfstate` de vazar se aplica a qualquer credencial que um agente vá usar em produção.
 
 Se o grupo estivesse começando o projeto QC hoje, a maior mudança seria decidir a estratégia multi-cloud (ou a decisão consciente de não fazer multi-cloud) já na Aula 1, em vez de tratá-la como bônus do Nível 3. O comparativo de custos do Exercício 2.2 mostrou que a diferença de preço entre provedores é pequena demais para justificar sozinha ficar preso a um único fornecedor, mas o custo de egress do Exercício 3.3 mostra que multi-cloud também não é gratuito. Nomear esse trade-off cedo evita retrabalho de arquitetura nas aulas seguintes.
 

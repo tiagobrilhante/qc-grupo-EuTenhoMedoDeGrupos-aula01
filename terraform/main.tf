@@ -29,7 +29,8 @@ resource "azurerm_resource_group" "rg" {
 }
 
 # ---------------------------------------------------------------------------
-# Rede — equivalente Terraform do template ARM exportado em ../../template/
+# Rede: reproduz a VM do lab (Atividade 4/5) criada no portal.
+# O template.json do curso não existe nesta aula, então partimos do main.tf do lab.
 # VNet 10.0.0.0/16 com subnet "default" 10.0.0.0/24
 # ---------------------------------------------------------------------------
 resource "azurerm_virtual_network" "vnet" {
@@ -47,8 +48,8 @@ resource "azurerm_subnet" "default" {
   address_prefixes     = ["10.0.0.0/24"]
 }
 
-# NOVO (Exercício 3.1, item 2) — subnet dedicada para a futura camada de aplicação
-# da Quantum Commerce, isolada da subnet "default" onde fica a VM de jump/bastion.
+# NOVO (Exercício 3.1, item 2): subnet dedicada para a futura camada de aplicação
+# da Quantum Commerce, isolada da subnet "default" onde fica a VM de referência.
 resource "azurerm_subnet" "app" {
   name                 = "subnet-app"
   resource_group_name  = azurerm_resource_group.rg.name
@@ -56,14 +57,17 @@ resource "azurerm_subnet" "app" {
   address_prefixes     = ["10.0.2.0/24"]
 }
 
-# NSG com as 3 regras inbound do template (SSH 22, HTTPS 443, HTTP 80)
+# NSG com as 3 regras inbound da VM do lab (SSH 22, HTTPS 443, HTTP 80).
+# EXTRA (não pedido no enunciado, mas o grupo considerou importante): além do SSH,
+# também restringimos HTTPS e HTTP à origem var.meu_ip, aplicando menor privilégio
+# de rede a esta VM de referência em vez de deixar 443/80 abertos a qualquer origem.
 resource "azurerm_network_security_group" "nsg" {
   name                = "vm-lab-aula01-nsg"
   resource_group_name = azurerm_resource_group.rg.name
   location            = azurerm_resource_group.rg.location
   tags                = local.tags
 
-  # ALTERADO (Exercício 3.1, item 1) — SSH deixa de aceitar "*" (qualquer origem)
+  # ALTERADO (Exercício 3.1, item 1): SSH deixa de aceitar "*" (qualquer origem)
   # e passa a aceitar apenas o IP público informado em var.meu_ip.
   security_rule {
     name                       = "SSH"
@@ -77,6 +81,7 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
 
+  # EXTRA (hardening do grupo): HTTPS também restrito a var.meu_ip, não aberto a "*".
   security_rule {
     name                       = "HTTPS"
     priority                   = 320
@@ -85,10 +90,11 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefix      = "*"
+    source_address_prefix      = "${var.meu_ip}/32"
     destination_address_prefix = "*"
   }
 
+  # EXTRA (hardening do grupo): HTTP também restrito a var.meu_ip, não aberto a "*".
   security_rule {
     name                       = "HTTP"
     priority                   = 340
@@ -97,12 +103,12 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefix      = "*"
+    source_address_prefix      = "${var.meu_ip}/32"
     destination_address_prefix = "*"
   }
 }
 
-# IP público estático (SKU Standard, como no template)
+# IP público estático (SKU Standard, como na VM do lab).
 resource "azurerm_public_ip" "pip" {
   name                = "vm-lab-aula01-ip"
   resource_group_name = azurerm_resource_group.rg.name
@@ -112,7 +118,7 @@ resource "azurerm_public_ip" "pip" {
   tags                = local.tags
 }
 
-# NIC com Accelerated Networking (suportado pelo D2s_v3) e o IP público anexado
+# NIC com Accelerated Networking (suportado pelo D2s_v3) e o IP público anexado.
 resource "azurerm_network_interface" "nic" {
   name                          = "vm-lab-aula01-nic"
   resource_group_name           = azurerm_resource_group.rg.name
@@ -128,15 +134,15 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
-# No template ARM o NSG é associado à NIC (não à subnet) — mantemos a mesma topologia
+# Na VM do lab o NSG é associado à NIC (não à subnet); mantemos a mesma topologia.
 resource "azurerm_network_interface_security_group_association" "nic_nsg" {
   network_interface_id      = azurerm_network_interface.nic.id
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
 # ---------------------------------------------------------------------------
-# Máquina virtual — Ubuntu 24.04 LTS, Standard_D2s_v3, disco Premium SSD
-# Autenticação somente por chave SSH (disablePasswordAuthentication = true)
+# Máquina virtual: Ubuntu 24.04 LTS, Standard_D2s_v3, disco Premium SSD.
+# Autenticação somente por chave SSH (disablePasswordAuthentication = true).
 # ---------------------------------------------------------------------------
 resource "azurerm_linux_virtual_machine" "vm" {
   name                            = "vm-lab-aula01"
