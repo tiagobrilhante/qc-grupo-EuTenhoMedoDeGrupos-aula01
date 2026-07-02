@@ -1,15 +1,3 @@
-// main.bicep — equivalente ao terraform/main.tf (Exercício 3.2)
-// Observação: a pasta aulas/01-fundamentos-iac/template/ com o template.json
-// não existe no repositório do grupo, então este arquivo foi escrito à mão
-// traduzindo o main.tf, em vez de gerado via `bicep decompile`.
-//
-// Deploy (RG já criado via az cli, escopo = resource group):
-//   az group create --name rg-bicep-aula01 --location eastus2
-//   az deployment group create \
-//     --resource-group rg-bicep-aula01 \
-//     --template-file main.bicep \
-//     --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)" meuIp="<seu-ip>"
-
 @description('Região dos recursos')
 param location string = resourceGroup().location
 
