@@ -9,7 +9,7 @@
 | # | Nome completo | GitHub         | E-mail FIAP |
 |---|---------------|----------------|-------------|
 | 1 | Tiago da Silva Brilhante | tiagobrilhante | contato@brilhante.dev.br |
-| 2 | Gabriel Moreira Do Nascimento | brunotlima     |  biel.djc603@gmail.com |
+| 2 | Gabriel Moreira Do Nascimento | Gabriel22880033     |  biel.djc603@gmail.com |
 | 3 | Andrew Augusto Jungers da Silva | Andrew470-coder         | andrewaugustolink@hotmail.com |
 | 4 | Getter Benedito de Matos Fernandes  | Getterbmf           | getterbmf@gmail.com |
 
