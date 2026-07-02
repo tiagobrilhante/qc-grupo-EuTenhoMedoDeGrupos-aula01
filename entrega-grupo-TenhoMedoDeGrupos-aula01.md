@@ -6,12 +6,12 @@
 
 ## Grupo
 
-| # | Nome completo | GitHub         | E-mail FIAP |
-|---|---------------|----------------|-------------|
-| 1 | Tiago da Silva Brilhante | tiagobrilhante | contato@brilhante.dev.br |
-| 2 | Gabriel Moreira Do Nascimento | Gabriel22880033     |  biel.djc603@gmail.com |
-| 3 | Andrew Augusto Jungers da Silva | Andrew470-coder         | andrewaugustolink@hotmail.com |
-| 4 | Getter Benedito de Matos Fernandes  | Getterbmf           | getterbmf@gmail.com |
+| # | Nome completo | GitHub         | E-mail FIAP                                            |
+|---|---------------|----------------|--------------------------------------------------------|
+| 1 | Tiago da Silva Brilhante | tiagobrilhante | contato@brilhante.dev.br<br/>rm373145@fiap.com.br      |
+| 2 | Gabriel Moreira Do Nascimento | Gabriel22880033     | biel.djc603@gmail.com<br/>rm372936@fiap.com.br         |
+| 3 | Andrew Augusto Jungers da Silva | Andrew470-coder         | andrewaugustolink@hotmail.com<br/>rm373216@fiap.com.br |
+| 4 | Getter Benedito de Matos Fernandes  | Getterbmf           | getterbmf@gmail.com<br/>rm373056@fiap.com.br           |
 
 
 ## Distribuição do trabalho
@@ -291,17 +291,15 @@ Tudo no Cloud Shell — bicep já está instalado.
 2. Implemente os mesmos recursos do lab (RG + VNet + Subnet + NSG + IP + NIC + VM Linux Ubuntu 24.04)
 
 3. Faça deploy com:
-```
-```terraform
-# Bicep precisa do RG já existente OU usar subscription scope
-az group create --name rg-bicep-aula01 --location eastus2
 
-az deployment group create \
-  --resource-group rg-bicep-aula01 \
-  --template-file main.bicep \
-  --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)"
-  ```
-```text
+    # Bicep precisa do RG já existente OU usar subscription scope
+    az group create --name rg-bicep-aula01 --location eastus2
+
+    az deployment group create \
+      --resource-group rg-bicep-aula01 \
+      --template-file main.bicep \
+      --parameters adminPublicKey="$(cat ~/.ssh/id_rsa.pub)"
+
 4. Compare os três artefatos lado a lado e responda no README do grupo:
 
 - Quantas linhas tem cada arquivo (template.json ARM × main.tf Terraform × main.bicep)?
@@ -309,10 +307,13 @@ az deployment group create \
 - Em que cenário você escolheria Bicep sobre Terraform?
 
 5. Não esqueça: az group delete --name rg-bicep-aula01 --yes --no-wait ao final.
-
 ```
 
 `bicep/main.bicep` traduz manualmente os mesmos recursos do `main.tf`
+```text
+NÃO existe o arquivo mencionado:  template.json em aulas/01-fundamentos-iac/template/
+E POR ESSE MOTIVO, usamos o arquivo do: aulas/01-fundamentos-iac/lab/terraform/main.tf
+```
 
 Comparação solicitada no item 4:
 
