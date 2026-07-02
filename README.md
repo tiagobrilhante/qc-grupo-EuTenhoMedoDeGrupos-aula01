@@ -35,3 +35,5 @@ az group delete --name rg-bicep-aula01 --yes --no-wait
 ## Observação
 
 `aulas/01-fundamentos-iac/template/template.json` não existe no repositório oficial nesta aula, então o Bicep foi escrito manualmente a partir do `main.tf`, em vez de gerado via `bicep decompile`.
+
+Todo poder emana do código
